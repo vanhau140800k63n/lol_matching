@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOL Match Scheduler</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="text-center my-4">
+            <img src="https://ddragon.leagueoflegends.com/cdn/13.24.1/img/champion/Ahri.png" alt="Ahri" class="champion-icon">
+            <h1>LOL Match Scheduler</h1>
+            <p class="subtitle">Tạo và quản lý trận đấu Liên Minh Huyền Thoại</p>
+        </header>
+
+        <div class="row">
+            <!-- Form tạo trận đấu -->
+            <div class="col-md-6">
+                <div class="card match-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-gamepad"></i> Tạo Trận Đấu Mới</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="matchForm">
+                            <div class="mb-3">
+                                <label class="form-label">Tên Đội 1</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                    <input type="text" class="form-control" id="team1Name" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tên Đội 2</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                    <input type="text" class="form-control" id="team2Name" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Thời Gian</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                    <input type="datetime-local" class="form-control" id="matchTime" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" style="color: white;">Người Chơi Đội 1</label>
+                                <div id="team1Players" class="player-inputs">
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" style="color: white;">Người Chơi Đội 2</label>
+                                <div id="team2Players" class="player-inputs">
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-plus-circle"></i> Tạo Trận Đấu
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danh sách trận đấu -->
+            <div class="col-md-6">
+                <div class="card match-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list"></i> Danh Sách Trận Đấu</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" id="searchMatch" placeholder="Tìm kiếm trận đấu...">
+                            </div>
+                        </div>
+                        <div id="matchList">
+                            <!-- Danh sách trận đấu sẽ được hiển thị ở đây -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal chỉnh sửa trận đấu -->
+    <div class="modal fade" id="editMatchModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chỉnh Sửa Trận Đấu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMatchForm">
+                        <input type="hidden" id="editMatchIndex">
+                        <div class="mb-3">
+                            <label class="form-label">Tên Đội 1</label>
+                            <input type="text" class="form-control" id="editTeam1Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tên Đội 2</label>
+                            <input type="text" class="form-control" id="editTeam2Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Thời Gian</label>
+                            <input type="datetime-local" class="form-control" id="editMatchTime" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Người Chơi Đội 1</label>
+                            <div id="editTeam1Players"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Người Chơi Đội 2</label>
+                            <div id="editTeam2Players"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" id="saveEditMatch">Lưu Thay Đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html> 
