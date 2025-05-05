@@ -1,22 +1,67 @@
 $(document).ready(function() {
-    // Hàm lấy dữ liệu từ localStorage
-    function getMatches() {
-        const today = new Date().toISOString().split('T')[0];
-        return JSON.parse(localStorage.getItem(`matches_${today}`)) || [];
+    const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN'; // Thay thế bằng token của bạn
+    const REPO_OWNER = 'YOUR_USERNAME'; // Thay thế bằng username GitHub của bạn
+    const REPO_NAME = 'lol-match-scheduler';
+    const DATA_FILE_PATH = 'data/matches.json';
+
+    // Hàm lấy dữ liệu từ GitHub
+    async function getMatches() {
+        try {
+            const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE_PATH}`);
+            const data = await response.json();
+            const content = atob(data.content);
+            return JSON.parse(content).matches;
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu:', error);
+            return [];
+        }
     }
 
-    // Hàm lưu dữ liệu vào localStorage
-    function saveMatches(matches) {
-        const today = new Date().toISOString().split('T')[0];
-        localStorage.setItem(`matches_${today}`, JSON.stringify(matches));
+    // Hàm lưu dữ liệu lên GitHub
+    async function saveMatches(matches) {
+        try {
+            // Lấy SHA của file hiện tại
+            const getResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE_PATH}`);
+            const getData = await getResponse.json();
+            const currentSha = getData.sha;
+
+            // Chuẩn bị dữ liệu mới
+            const newContent = {
+                matches: matches
+            };
+            const content = btoa(JSON.stringify(newContent, null, 2));
+
+            // Cập nhật file
+            const updateResponse = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE_PATH}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: 'Cập nhật dữ liệu trận đấu',
+                    content: content,
+                    sha: currentSha
+                })
+            });
+
+            if (!updateResponse.ok) {
+                throw new Error('Lỗi khi lưu dữ liệu');
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Lỗi khi lưu dữ liệu:', error);
+            return false;
+        }
     }
 
     // Hàm hiển thị danh sách trận đấu
-    function displayMatches(matches = null) {
+    async function displayMatches(matches = null) {
         const matchList = $('#matchList');
         matchList.empty();
 
-        const matchesToDisplay = matches || getMatches();
+        const matchesToDisplay = matches || await getMatches();
 
         matchesToDisplay.forEach((match, index) => {
             const matchTime = new Date(match.time).toLocaleString('vi-VN');
@@ -43,7 +88,7 @@ $(document).ready(function() {
     }
 
     // Xử lý form submit
-    $('#matchForm').on('submit', function(e) {
+    $('#matchForm').on('submit', async function(e) {
         e.preventDefault();
 
         // Lấy dữ liệu từ form
@@ -73,34 +118,41 @@ $(document).ready(function() {
         };
 
         // Lưu trận đấu mới
-        const matches = getMatches();
+        const matches = await getMatches();
         matches.push(newMatch);
-        saveMatches(matches);
+        const success = await saveMatches(matches);
 
-        // Hiển thị lại danh sách
-        displayMatches();
-
-        // Reset form
-        this.reset();
-
-        // Hiển thị thông báo
-        showNotification('Tạo trận đấu thành công!', 'success');
+        if (success) {
+            // Hiển thị lại danh sách
+            displayMatches();
+            // Reset form
+            this.reset();
+            // Hiển thị thông báo
+            showNotification('Tạo trận đấu thành công!', 'success');
+        } else {
+            showNotification('Lỗi khi tạo trận đấu!', 'error');
+        }
     });
 
     // Hàm xóa trận đấu
-    window.deleteMatch = function(index) {
+    window.deleteMatch = async function(index) {
         if (confirm('Bạn có chắc muốn xóa trận đấu này?')) {
-            const matches = getMatches();
+            const matches = await getMatches();
             matches.splice(index, 1);
-            saveMatches(matches);
-            displayMatches();
-            showNotification('Đã xóa trận đấu!', 'success');
+            const success = await saveMatches(matches);
+            
+            if (success) {
+                displayMatches();
+                showNotification('Đã xóa trận đấu!', 'success');
+            } else {
+                showNotification('Lỗi khi xóa trận đấu!', 'error');
+            }
         }
     };
 
     // Hàm chỉnh sửa trận đấu
-    window.editMatch = function(index) {
-        const matches = getMatches();
+    window.editMatch = async function(index) {
+        const matches = await getMatches();
         const match = matches[index];
 
         // Điền dữ liệu vào form chỉnh sửa
@@ -132,9 +184,9 @@ $(document).ready(function() {
     };
 
     // Xử lý lưu chỉnh sửa
-    $('#saveEditMatch').on('click', function() {
+    $('#saveEditMatch').on('click', async function() {
         const index = $('#editMatchIndex').val();
-        const matches = getMatches();
+        const matches = await getMatches();
 
         // Lấy dữ liệu từ form chỉnh sửa
         const team1Name = $('#editTeam1Name').val();
@@ -163,20 +215,23 @@ $(document).ready(function() {
         };
 
         // Lưu và hiển thị lại
-        saveMatches(matches);
-        displayMatches();
-
-        // Đóng modal
-        $('#editMatchModal').modal('hide');
-
-        // Hiển thị thông báo
-        showNotification('Cập nhật trận đấu thành công!', 'success');
+        const success = await saveMatches(matches);
+        
+        if (success) {
+            displayMatches();
+            // Đóng modal
+            $('#editMatchModal').modal('hide');
+            // Hiển thị thông báo
+            showNotification('Cập nhật trận đấu thành công!', 'success');
+        } else {
+            showNotification('Lỗi khi cập nhật trận đấu!', 'error');
+        }
     });
 
     // Xử lý tìm kiếm
-    $('#searchMatch').on('input', function() {
+    $('#searchMatch').on('input', async function() {
         const searchTerm = $(this).val().toLowerCase();
-        const matches = getMatches();
+        const matches = await getMatches();
 
         const filteredMatches = matches.filter(match => {
             return match.team1.toLowerCase().includes(searchTerm) ||
