@@ -1,321 +1,361 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Lịch trình Tour Hạ Long</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #fafafa;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .day-section {
-      margin-bottom: 40px;
-    }
-    .day-title {
-      font-size: 1.5em;
-      margin-bottom: 10px;
-      border-bottom: 2px solid #333;
-      padding-bottom: 5px;
-    }
-    .event {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-left-width: 5px;
-      border-radius: 4px;
-      margin: 8px 0;
-      background: #fff;
-    }
-    .event.past    { border-left-color: #999; color: #777; }
-    .event.current { border-left-color: #28a745; background: #e9f7ef; }
-    .event.upcoming{ border-left-color: #007bff; background: #e7f1ff; }
-    .time {
-      width: 120px;
-      font-weight: bold;
-    }
-    .content {
-      flex: 1;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Lịch trình Tour Hạ Long</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #fafafa;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .day-section {
+            margin-bottom: 40px;
+        }
+
+        .day-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .event {
+            display: flex;
+            align-items: flex-start;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-left-width: 5px;
+            border-radius: 4px;
+            margin: 8px 0;
+            background: #fff;
+        }
+
+        .event.past {
+            border-left-color: #999;
+            color: #777;
+        }
+
+        .event.current {
+            border-left-color: #28a745;
+            background: #e9f7ef;
+        }
+
+        .event.upcoming {
+            border-left-color: #007bff;
+            background: #e7f1ff;
+        }
+
+        .time {
+            width: 140px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .content {
+            flex: 1;
+            white-space: pre-wrap;
+        }
+
+        .note {
+            margin-left: 140px;
+            font-style: italic;
+            color: #555;
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>Lịch trình Tour Hạ Long</h1>
-<div id="schedule"></div>
+    <h1>Lịch trình Tour Hạ Long</h1>
+    <div id="schedule"></div>
 
-<script>
-// — Dữ liệu JSON
-const data = [
-    {
-        "Đề mục":"Ngày 1 \n",
-        "Danh mục":"HẠ LONG - DU THUYỀN",
-        "Thời gian":"? ",
-        "Nội dung":"Tập trung Xe và hdv đón tại điểm hẹn "
-    },
-    {
-        "Đề mục":"Ngày 1 \n",
-        "Danh mục":"HẠ LONG - DU THUYỀN",
-        "Thời gian":"08:00-11:30",
-        "Nội dung":"Khởi hành đến bến tàu Tuần Châu "
-    },
-    {
-        "Đề mục":"Ngày 1 \n",
-        "Danh mục":"HẠ LONG - DU THUYỀN",
-        "Thời gian":"11:30-12:00 ",
-        "Nội dung":"check in tại nhà chờ La Regina Cruises – Lô 24 Bến Tuần Châu"
-    },
-    {
-        "Đề mục":"Ngày 1 \n",
-        "Danh mục":"HẠ LONG - DU THUYỀN",
-        "Thời gian":"12:15 – 12:30 ",
-        "Nội dung":"- Di chuyển bằng tender\/ hoặc xuồng cao tốc để ra du thuyền ngoài vịnh Lan Hạ - một vùng biển thật thanh bình. \n- Nghe hướng dẫn nội dung an toàn trên tàu trước khi nhận phòng "
-    },
-    {
-        "Đề mục":"Ngày 1 \n",
-        "Danh mục":"HẠ LONG - DU THUYỀN",
-        "Thời gian":"13:00:00",
-        "Nội dung":"Ăn trưa "
-    },
-    {
-        "Đề mục":"Ngày 1 \n",
-        "Danh mục":"HẠ LONG - DU THUYỀN",
-        "Thời gian":"15:30:00",
-        "Nội dung":"Du thuyền đến khu vực Hang Sáng Tối. \nCó thể hoạt động chèo kayak "
-    },
-    {
-        "Đề mục":"Ngày 1 \n",
-        "Danh mục":"HẠ LONG - DU THUYỀN",
-        "Thời gian":"17:30:00",
-        "Nội dung":"Trở lại tàu ngắm hoàng hôn, thưởng thức chương trình \"happy hour\" "
-    },
-    {
-        "Đề mục":"Ngày 1 \n",
-        "Danh mục":"HẠ LONG - DU THUYỀN",
-        "Thời gian":"19:00:00",
-        "Nội dung":"Ăn tối "
-    },
-    {
-        "Đề mục":"Ngày 2\n",
-        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
-        "Thời gian":"06:00:00",
-        "Nội dung":"Cùng ngắm bình minh trong không khí trong lành và khung cảnh thơ mộng của Vịnh Lan Hạ. Tham gia lớp học thái cực quyền để bắt đầu một ngày mới thật nhiều năng lượng."
-    },
-    {
-        "Đề mục":"Ngày 2\n",
-        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
-        "Thời gian":"06:45:00",
-        "Nội dung":"Bữa sáng nhẹ tại nhà hàng "
-    },
-    {
-        "Đề mục":"Ngày 2\n",
-        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
-        "Thời gian":"07:30:00",
-        "Nội dung":"Thăm quan hang Trung Trang trên đảo Cát bà "
-    },
-    {
-        "Đề mục":"Ngày 2\n",
-        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
-        "Thời gian":"09:30:00",
-        "Nội dung":"Trở lại tàu nghỉ ngơi, check out phòng "
-    },
-    {
-        "Đề mục":"Ngày 2\n",
-        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
-        "Thời gian":"09:45:00",
-        "Nội dung":"Bữa trưa buffet được phục vụ tại nhà hàng trong khi du thuyển quay trở lại bến tàu "
-    },
-    {
-        "Đề mục":"Ngày 2\n",
-        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
-        "Thời gian":"11:00:00",
-        "Nội dung":"Trở về bến, kết thúc chương trình trên du thuyền"
-    },
-    {
-        "Đề mục":"Ngày 2\n",
-        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
-        "Thời gian":null,
-        "Nội dung":"Di chuyển xuống Quang Hanh- đến suối nước nóng Yoko onsen "
-    },
-    {
-        "Đề mục":"Ngày 2\n",
-        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
-        "Thời gian":"18:30:00",
-        "Nội dung":"Ăn buffet chuẩn Nhật tại nhà hàng "
-    },
-    {
-        "Đề mục":"Ngày 2\n",
-        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
-        "Thời gian":null,
-        "Nội dung":"Quay trở lại khách sạn "
-    },
-    {
-        "Đề mục":"Ngày 3\n",
-        "Danh mục":"HẠ LONG - GALA DINNER ",
-        "Thời gian":"07:00 - 08:00",
-        "Nội dung":"Ăn sáng tại khách sạn "
-    },
-      {
-        "Đề mục":"Ngày 2\n",
-        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
-        "Thời gian":null,
-        "Nội dung":"Check in khách sạn Mường Thanh- Hạ Long "
-    },
-    {
-        "Đề mục":"Ngày 3\n",
-        "Danh mục":"HẠ LONG - GALA DINNER ",
-        "Thời gian":null,
-        "Nội dung":"Tham gia các trải nghiệm tại công viên nước, công viên rồng.... "
-    },
-    {
-        "Đề mục":"Ngày 3\n",
-        "Danh mục":"HẠ LONG - GALA DINNER ",
-        "Thời gian":null,
-        "Nội dung":"Ăn trưa "
-    },
-    {
-        "Đề mục":"Ngày 3\n",
-        "Danh mục":"HẠ LONG - GALA DINNER ",
-        "Thời gian":null,
-        "Nội dung":"Gala Dinner "
-    },
-    {
-        "Đề mục":"Ngày 3\n",
-        "Danh mục":"HẠ LONG - GALA DINNER ",
-        "Thời gian":null,
-        "Nội dung":"Hoạt động tự do "
-    },
-    {
-        "Đề mục":"Ngày 4\n",
-        "Danh mục":"HẠ LONG - HÀ NỘI  ",
-        "Thời gian":null,
-        "Nội dung":"Ăn sáng tại khách sạn "
-    },
-    {
-        "Đề mục":"Ngày 4\n",
-        "Danh mục":"HẠ LONG - HÀ NỘI  ",
-        "Thời gian":null,
-        "Nội dung":"Mua sắm quà..."
-    },
-    {
-        "Đề mục":"Ngày 4\n",
-        "Danh mục":"HẠ LONG - HÀ NỘI  ",
-        "Thời gian":null,
-        "Nội dung":"Ăn trưa "
-    },
-    {
-        "Đề mục":"Ngày 4\n",
-        "Danh mục":"HẠ LONG - HÀ NỘI  ",
-        "Thời gian":null,
-        "Nội dung":"Về HN"
-    },
-    {
-        "Đề mục":"Ngày 4\n",
-        "Danh mục":"HẠ LONG - HÀ NỘI  ",
-        "Thời gian":null,
-        "Nội dung":null
-    }
-]
+    <script>
+        const data = [
+            {
+                "Đề mục": "Ngày 1",
+                "Danh mục": "HẠ LONG - DU THUYỀN",
+                "Thời gian": "? ",
+                "Nội dung": "Tập trung Xe và hdv đón tại điểm hẹn",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 1",
+                "Danh mục": "HẠ LONG - DU THUYỀN",
+                "Thời gian": "08:00-11:30",
+                "Nội dung": "Khởi hành đến bến tàu Tuần Châu",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 1",
+                "Danh mục": "HẠ LONG - DU THUYỀN",
+                "Thời gian": "11:30-12:00",
+                "Nội dung": "check in tại nhà chờ La Regina Cruises – Lô 24 Bến Tuần Châu",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 1",
+                "Danh mục": "HẠ LONG - DU THUYỀN",
+                "Thời gian": "12:15-12:30",
+                "Nội dung": "- Di chuyển bằng tender hoặc xuồng cao tốc để ra du thuyền ngoài vịnh Lan Hạ - một vùng biển thật thanh bình.\n- Nghe hướng dẫn nội dung an toàn trên tàu trước khi nhận phòng",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 1",
+                "Danh mục": "HẠ LONG - DU THUYỀN",
+                "Thời gian": "13:00:00",
+                "Nội dung": "Ăn trưa",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 1",
+                "Danh mục": "HẠ LONG - DU THUYỀN",
+                "Thời gian": "15:30:00",
+                "Nội dung": "Du thuyền đến khu vực Hang Sáng Tối.\nCó thể hoạt động chèo kayak",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 1",
+                "Danh mục": "HẠ LONG - DU THUYỀN",
+                "Thời gian": "17:30:00",
+                "Nội dung": "Trở lại tàu ngắm hoàng hôn, thưởng thức chương trình \"happy hour\"",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 1",
+                "Danh mục": "HẠ LONG - DU THUYỀN",
+                "Thời gian": "19:00:00",
+                "Nội dung": "Ăn tối",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 2",
+                "Danh mục": "VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+                "Thời gian": "06:00:00",
+                "Nội dung": "Cùng ngắm bình minh trong không khí trong lành và khung cảnh thơ mộng của Vịnh Lan Hạ. Tham gia lớp học thái cực quyền để bắt đầu một ngày mới thật nhiều năng lượng.",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 2",
+                "Danh mục": "VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+                "Thời gian": "06:45:00",
+                "Nội dung": "Bữa sáng nhẹ tại nhà hàng",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 2",
+                "Danh mục": "VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+                "Thời gian": "07:30:00",
+                "Nội dung": "Thăm quan hang Trung Trang trên đảo Cát Bà",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 2",
+                "Danh mục": "VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+                "Thời gian": "09:30:00",
+                "Nội dung": "Trở lại tàu nghỉ ngơi, check out phòng",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 2",
+                "Danh mục": "VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+                "Thời gian": "09:45:00",
+                "Nội dung": "Bữa trưa buffet được phục vụ tại nhà hàng trong khi du thuyền quay trở lại bến tàu",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 2",
+                "Danh mục": "VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+                "Thời gian": "11:00:00",
+                "Nội dung": "Trở về bến, kết thúc chương trình trên du thuyền",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 2",
+                "Danh mục": "VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+                "Thời gian": "11:15:00",
+                "Nội dung": "Di chuyển xuống Quang Hanh - đến suối nước nóng Yoko onsen",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 2",
+                "Danh mục": "VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+                "Thời gian": "18:30:00",
+                "Nội dung": "Ăn buffet chuẩn Nhật tại nhà hàng",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 2",
+                "Danh mục": "VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+                "Thời gian": null,
+                "Nội dung": "Quay trở lại khách sạn",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 3",
+                "Danh mục": "HẠ LONG - GALA DINNER",
+                "Thời gian": "07:00-08:00",
+                "Nội dung": "Ăn sáng tại khách sạn",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 3",
+                "Danh mục": "HẠ LONG - GALA DINNER",
+                "Thời gian": null,
+                "Nội dung": "Tham gia các trải nghiệm tại công viên nước, công viên rồng....",
+                "note": "Báo HDV lấy hộ nhé"
+            },
+            {
+                "Đề mục": "Ngày 3",
+                "Danh mục": "HẠ LONG - GALA DINNER",
+                "Thời gian": null,
+                "Nội dung": "Ăn trưa",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 3",
+                "Danh mục": "HẠ LONG - GALA DINNER",
+                "Thời gian": "18:00:00",
+                "Nội dung": "Gala Dinner",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 3",
+                "Danh mục": "HẠ LONG - GALA DINNER",
+                "Thời gian": null,
+                "Nội dung": "Hoạt động tự do",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 4",
+                "Danh mục": "HẠ LONG - HÀ NỘI",
+                "Thời gian": "07:00-08:00",
+                "Nội dung": "Ăn sáng tại khách sạn",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 4",
+                "Danh mục": "HẠ LONG - HÀ NỘI",
+                "Thời gian": "9:30:00",
+                "Nội dung": "Checkout, mua sắm quà...",
+                "note": "bạn nào không đi mua sắm có thể chờ ở khách sạn để dùng bữa trưa cùng đoàn"
+            },
+            {
+                "Đề mục": "Ngày 4",
+                "Danh mục": "HẠ LONG - HÀ NỘI",
+                "Thời gian": "11:00-11:30",
+                "Nội dung": "Ăn trưa",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 4",
+                "Danh mục": "HẠ LONG - HÀ NỘI",
+                "Thời gian": null,
+                "Nội dung": "Về HN",
+                "note": null
+            },
+            {
+                "Đề mục": "Ngày 4",
+                "Danh mục": "HẠ LONG - HÀ NỘI",
+                "Thời gian": null,
+                "Nội dung": null,
+                "note": null
+            }
+        ];
 
-// Ngày bắt đầu: 11/07/2025
-const baseDate = new Date("2025-07-11T00:00:00");
-const now = new Date();
+        // Ngày bắt đầu: 11/07/2025
+        const baseDate = new Date("2025-07-11T00:00:00");
+        const now = new Date();
 
-// Format Date → "15h30" hoặc "15h"
-function formatTime(d) {
-  const h = d.getHours();
-  const m = d.getMinutes();
-  return m
-    ? `${h}h${m.toString().padStart(2, '0')}`
-    : `${h}h`;
-}
+        // format "15h30" hoặc "15h"
+        function formatTime(d) {
+            const h = d.getHours(), m = d.getMinutes();
+            return m ? `${h}h${m.toString().padStart(2, '0')}` : `${h}h`;
+        }
 
-// Parse mỗi mục, tạo start/end và timeStr
-function parseEvent(item) {
-  const dayMatch = item['Đề mục'].match(/Ngày\s*(\d+)/);
-  const dayOffset = dayMatch ? parseInt(dayMatch[1], 10) - 1 : 0;
-  const date = new Date(baseDate);
-  date.setDate(baseDate.getDate() + dayOffset);
+        // parse mỗi mục
+        function parseEvent(item) {
+            const dayMatch = item['Đề mục'].match(/Ngày\s*(\d+)/);
+            const offset = dayMatch ? parseInt(dayMatch[1], 10) - 1 : 0;
+            const date = new Date(baseDate);
+            date.setDate(date.getDate() + offset);
 
-  let start = new Date(date), end = new Date(date);
-  const t = item['Thời gian'];
-  let timeStr;
-  if (t && /\d/.test(t)) {
-    const parts = t.split(/[-–]/).map(s => s.trim());
-    const toDateTime = s => {
-      const [h, m] = s.split(':');
-      const d = new Date(date);
-      d.setHours(+h, +m, 0);
-      return d;
-    };
-    start = toDateTime(parts[0]);
-    end   = parts[1] ? toDateTime(parts[1]) : new Date(start.getTime() + 3600000);
-    timeStr = parts[1]
-      ? `${formatTime(start)} - ${formatTime(end)}`
-      : formatTime(start);
-  } else {
-    timeStr = 'Chưa rõ';
-    start.setHours(0,0,0);
-    end.setHours(23,59,59);
-  }
+            let start = new Date(date), end = new Date(date);
+            const t = item['Thời gian'];
+            let timeStr;
+            if (t && /\d/.test(t)) {
+                const parts = t.split(/[-–]/).map(s => s.trim());
+                const toDT = s => {
+                    const [h, m] = s.split(':');
+                    const d = new Date(date);
+                    d.setHours(+h, +m, 0);
+                    return d;
+                };
+                start = toDT(parts[0]);
+                end = parts[1] ? toDT(parts[1]) : new Date(start.getTime() + 3600000);
+                timeStr = parts[1]
+                    ? `${formatTime(start)} - ${formatTime(end)}`
+                    : formatTime(start);
+            } else {
+                timeStr = 'Chưa rõ';
+                start.setHours(0, 0, 0);
+                end.setHours(23, 59, 59);
+            }
 
-  return { ...item, date, start, end, timeStr };
-}
+            return { ...item, date, start, end, timeStr };
+        }
 
-// Gom nhóm theo ngày giữ thứ tự
-const eventsByDate = {};
-const dayOrder = [];  // lưu thứ tự ngày xuất hiện
-data.forEach(item => {
-  const evt = parseEvent(item);
-  const dayKey = evt.date.toLocaleDateString('vi-VN', {
-    weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric'
-  });
-  if (!eventsByDate[dayKey]) {
-    eventsByDate[dayKey] = [];
-    dayOrder.push(dayKey);
-  }
-  eventsByDate[dayKey].push(evt);
-});
+        // nhóm giữ thứ tự
+        const eventsByDate = {}, dayOrder = [];
+        data.forEach(item => {
+            const evt = parseEvent(item);
+            const dayKey = evt.date.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' });
+            if (!eventsByDate[dayKey]) { eventsByDate[dayKey] = []; dayOrder.push(dayKey) }
+            eventsByDate[dayKey].push(evt);
+        });
 
-// Hiển thị theo thứ tự mảng JSON
-const container = document.getElementById('schedule');
-dayOrder.forEach(dayKey => {
-  const section = document.createElement('div');
-  section.className = 'day-section';
-  const title = document.createElement('div');
-  title.className = 'day-title';
-  title.textContent = dayKey;
-  section.appendChild(title);
+        // render
+        const container = document.getElementById('schedule');
+        dayOrder.forEach(dayKey => {
+            const section = document.createElement('div'); section.className = 'day-section';
+            const title = document.createElement('div'); title.className = 'day-title'; title.textContent = dayKey;
+            section.appendChild(title);
 
-  // Không sort, giữ nguyên thứ tự eventsByDate[dayKey]
-  eventsByDate[dayKey].forEach(evt => {
-    const div = document.createElement('div');
-    div.className = 'event ' + (
-      now > evt.end    ? 'past' :
-      now >= evt.start ? 'current' : 'upcoming'
-    );
+            eventsByDate[dayKey].forEach(evt => {
+                const state = now > evt.end ? 'past' : now >= evt.start ? 'current' : 'upcoming';
+                const div = document.createElement('div');
+                div.className = `event ${state}`;
 
-    const timeSpan = document.createElement('div');
-    timeSpan.className = 'time';
-    timeSpan.textContent = evt.timeStr;
-    div.appendChild(timeSpan);
+                // time
+                const timeSpan = document.createElement('div'); timeSpan.className = 'time';
+                timeSpan.textContent = evt.timeStr; div.appendChild(timeSpan);
 
-    const content = document.createElement('div');
-    content.className = 'content';
-    content.textContent = evt['Nội dung'] || '';
-    div.appendChild(content);
+                // nội dung
+                const content = document.createElement('div'); content.className = 'content';
+                content.textContent = evt['Nội dung'] || ''; div.appendChild(content);
 
-    section.appendChild(div);
-  });
+                // note nếu có
+                if (evt.note) {
+                    const noteDiv = document.createElement('div');
+                    noteDiv.className = 'note';
+                    noteDiv.textContent = `Ghi chú: ${evt.note}`;
+                    div.appendChild(noteDiv);
+                }
 
-  container.appendChild(section);
-});
-</script>
+                section.appendChild(div);
+            });
+
+            container.appendChild(section);
+        });
+    </script>
 
 </body>
+
 </html>
