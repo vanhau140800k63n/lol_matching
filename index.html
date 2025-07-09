@@ -1,174 +1,321 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOL Match Scheduler</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Lịch trình Tour Hạ Long</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #fafafa;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .day-section {
+      margin-bottom: 40px;
+    }
+    .day-title {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #333;
+      padding-bottom: 5px;
+    }
+    .event {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-left-width: 5px;
+      border-radius: 4px;
+      margin: 8px 0;
+      background: #fff;
+    }
+    .event.past    { border-left-color: #999; color: #777; }
+    .event.current { border-left-color: #28a745; background: #e9f7ef; }
+    .event.upcoming{ border-left-color: #007bff; background: #e7f1ff; }
+    .time {
+      width: 120px;
+      font-weight: bold;
+    }
+    .content {
+      flex: 1;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header class="text-center my-4">
-            <img src="https://ddragon.leagueoflegends.com/cdn/13.24.1/img/champion/Ahri.png" alt="Ahri" class="champion-icon">
-            <h1>LOL Match Scheduler</h1>
-            <p class="subtitle">Tạo và quản lý trận đấu Liên Minh Huyền Thoại</p>
-        </header>
 
-        <div class="row">
-            <!-- Form tạo trận đấu -->
-            <div class="col-md-6">
-                <div class="card match-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-gamepad"></i> Tạo Trận Đấu Mới</h3>
-                    </div>
-                    <div class="card-body">
-                        <form id="matchForm">
-                            <div class="mb-3">
-                                <label class="form-label">Tên Đội 1</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-users"></i></span>
-                                    <input type="text" class="form-control" id="team1Name" required>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Tên Đội 2</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-users"></i></span>
-                                    <input type="text" class="form-control" id="team2Name" required>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Thời Gian</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                    <input type="datetime-local" class="form-control" id="matchTime" required>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" style="color: white;">Người Chơi Đội 1</label>
-                                <div id="team1Players" class="player-inputs">
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
-                                    </div>
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
-                                    </div>
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
-                                    </div>
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
-                                    </div>
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" style="color: white;">Người Chơi Đội 2</label>
-                                <div id="team2Players" class="player-inputs">
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
-                                    </div>
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
-                                    </div>
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
-                                    </div>
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
-                                    </div>
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                        <input type="text" class="form-control" placeholder="Tên người chơi" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-lg w-100">
-                                <i class="fas fa-plus-circle"></i> Tạo Trận Đấu
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+<h1>Lịch trình Tour Hạ Long</h1>
+<div id="schedule"></div>
 
-            <!-- Danh sách trận đấu -->
-            <div class="col-md-6">
-                <div class="card match-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-list"></i> Danh Sách Trận Đấu</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                <input type="text" class="form-control" id="searchMatch" placeholder="Tìm kiếm trận đấu...">
-                            </div>
-                        </div>
-                        <div id="matchList">
-                            <!-- Danh sách trận đấu sẽ được hiển thị ở đây -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<script>
+// — Dữ liệu JSON
+const data = [
+    {
+        "Đề mục":"Ngày 1 \n",
+        "Danh mục":"HẠ LONG - DU THUYỀN",
+        "Thời gian":"? ",
+        "Nội dung":"Tập trung Xe và hdv đón tại điểm hẹn "
+    },
+    {
+        "Đề mục":"Ngày 1 \n",
+        "Danh mục":"HẠ LONG - DU THUYỀN",
+        "Thời gian":"08:00-11:30",
+        "Nội dung":"Khởi hành đến bến tàu Tuần Châu "
+    },
+    {
+        "Đề mục":"Ngày 1 \n",
+        "Danh mục":"HẠ LONG - DU THUYỀN",
+        "Thời gian":"11:30-12:00 ",
+        "Nội dung":"check in tại nhà chờ La Regina Cruises – Lô 24 Bến Tuần Châu"
+    },
+    {
+        "Đề mục":"Ngày 1 \n",
+        "Danh mục":"HẠ LONG - DU THUYỀN",
+        "Thời gian":"12:15 – 12:30 ",
+        "Nội dung":"- Di chuyển bằng tender\/ hoặc xuồng cao tốc để ra du thuyền ngoài vịnh Lan Hạ - một vùng biển thật thanh bình. \n- Nghe hướng dẫn nội dung an toàn trên tàu trước khi nhận phòng "
+    },
+    {
+        "Đề mục":"Ngày 1 \n",
+        "Danh mục":"HẠ LONG - DU THUYỀN",
+        "Thời gian":"13:00:00",
+        "Nội dung":"Ăn trưa "
+    },
+    {
+        "Đề mục":"Ngày 1 \n",
+        "Danh mục":"HẠ LONG - DU THUYỀN",
+        "Thời gian":"15:30:00",
+        "Nội dung":"Du thuyền đến khu vực Hang Sáng Tối. \nCó thể hoạt động chèo kayak "
+    },
+    {
+        "Đề mục":"Ngày 1 \n",
+        "Danh mục":"HẠ LONG - DU THUYỀN",
+        "Thời gian":"17:30:00",
+        "Nội dung":"Trở lại tàu ngắm hoàng hôn, thưởng thức chương trình \"happy hour\" "
+    },
+    {
+        "Đề mục":"Ngày 1 \n",
+        "Danh mục":"HẠ LONG - DU THUYỀN",
+        "Thời gian":"19:00:00",
+        "Nội dung":"Ăn tối "
+    },
+    {
+        "Đề mục":"Ngày 2\n",
+        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+        "Thời gian":"06:00:00",
+        "Nội dung":"Cùng ngắm bình minh trong không khí trong lành và khung cảnh thơ mộng của Vịnh Lan Hạ. Tham gia lớp học thái cực quyền để bắt đầu một ngày mới thật nhiều năng lượng."
+    },
+    {
+        "Đề mục":"Ngày 2\n",
+        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+        "Thời gian":"06:45:00",
+        "Nội dung":"Bữa sáng nhẹ tại nhà hàng "
+    },
+    {
+        "Đề mục":"Ngày 2\n",
+        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+        "Thời gian":"07:30:00",
+        "Nội dung":"Thăm quan hang Trung Trang trên đảo Cát bà "
+    },
+    {
+        "Đề mục":"Ngày 2\n",
+        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+        "Thời gian":"09:30:00",
+        "Nội dung":"Trở lại tàu nghỉ ngơi, check out phòng "
+    },
+    {
+        "Đề mục":"Ngày 2\n",
+        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+        "Thời gian":"09:45:00",
+        "Nội dung":"Bữa trưa buffet được phục vụ tại nhà hàng trong khi du thuyển quay trở lại bến tàu "
+    },
+    {
+        "Đề mục":"Ngày 2\n",
+        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+        "Thời gian":"11:00:00",
+        "Nội dung":"Trở về bến, kết thúc chương trình trên du thuyền"
+    },
+    {
+        "Đề mục":"Ngày 2\n",
+        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+        "Thời gian":null,
+        "Nội dung":"Check in khách sạn Mường Thanh- Hạ Long "
+    },
+    {
+        "Đề mục":"Ngày 2\n",
+        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+        "Thời gian":null,
+        "Nội dung":"Di chuyển xuống Quang Hanh- đến suối nước nóng Yoko onsen "
+    },
+    {
+        "Đề mục":"Ngày 2\n",
+        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+        "Thời gian":null,
+        "Nội dung":"Ăn buffet chuẩn Nhật tại nhà hàng "
+    },
+    {
+        "Đề mục":"Ngày 2\n",
+        "Danh mục":"VỊNH LAN HẠ - VỊNH HẠ LONG – ONSEN",
+        "Thời gian":null,
+        "Nội dung":"Quay trở lại khách sạn "
+    },
+    {
+        "Đề mục":"Ngày 3\n",
+        "Danh mục":"HẠ LONG - GALA DINNER ",
+        "Thời gian":"07:00 - 08:00",
+        "Nội dung":"Ăn sáng tại khách sạn "
+    },
+    {
+        "Đề mục":"Ngày 3\n",
+        "Danh mục":"HẠ LONG - GALA DINNER ",
+        "Thời gian":null,
+        "Nội dung":"Tham gia các trải nghiệm tại công viên nước, công viên rồng.... "
+    },
+    {
+        "Đề mục":"Ngày 3\n",
+        "Danh mục":"HẠ LONG - GALA DINNER ",
+        "Thời gian":null,
+        "Nội dung":"Ăn trưa "
+    },
+    {
+        "Đề mục":"Ngày 3\n",
+        "Danh mục":"HẠ LONG - GALA DINNER ",
+        "Thời gian":null,
+        "Nội dung":"Gala Dinner "
+    },
+    {
+        "Đề mục":"Ngày 3\n",
+        "Danh mục":"HẠ LONG - GALA DINNER ",
+        "Thời gian":null,
+        "Nội dung":"Hoạt động tự do "
+    },
+    {
+        "Đề mục":"Ngày 4\n",
+        "Danh mục":"HẠ LONG - HÀ NỘI  ",
+        "Thời gian":null,
+        "Nội dung":"Ăn sáng tại khách sạn "
+    },
+    {
+        "Đề mục":"Ngày 4\n",
+        "Danh mục":"HẠ LONG - HÀ NỘI  ",
+        "Thời gian":null,
+        "Nội dung":"Mua sắm quà..."
+    },
+    {
+        "Đề mục":"Ngày 4\n",
+        "Danh mục":"HẠ LONG - HÀ NỘI  ",
+        "Thời gian":null,
+        "Nội dung":"Ăn trưa "
+    },
+    {
+        "Đề mục":"Ngày 4\n",
+        "Danh mục":"HẠ LONG - HÀ NỘI  ",
+        "Thời gian":null,
+        "Nội dung":"Về HN"
+    },
+    {
+        "Đề mục":"Ngày 4\n",
+        "Danh mục":"HẠ LONG - HÀ NỘI  ",
+        "Thời gian":null,
+        "Nội dung":null
+    }
+]
 
-    <!-- Modal chỉnh sửa trận đấu -->
-    <div class="modal fade" id="editMatchModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Chỉnh Sửa Trận Đấu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editMatchForm">
-                        <input type="hidden" id="editMatchIndex">
-                        <div class="mb-3">
-                            <label class="form-label">Tên Đội 1</label>
-                            <input type="text" class="form-control" id="editTeam1Name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Tên Đội 2</label>
-                            <input type="text" class="form-control" id="editTeam2Name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Thời Gian</label>
-                            <input type="datetime-local" class="form-control" id="editMatchTime" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Người Chơi Đội 1</label>
-                            <div id="editTeam1Players"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Người Chơi Đội 2</label>
-                            <div id="editTeam2Players"></div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary" id="saveEditMatch">Lưu Thay Đổi</button>
-                </div>
-            </div>
-        </div>
-    </div>
+// Ngày bắt đầu: 11/07/2025
+const baseDate = new Date("2025-07-11T00:00:00");
+const now = new Date();
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/script.js"></script>
+// Format Date → "15h30" hoặc "15h"
+function formatTime(d) {
+  const h = d.getHours();
+  const m = d.getMinutes();
+  return m
+    ? `${h}h${m.toString().padStart(2, '0')}`
+    : `${h}h`;
+}
+
+// Parse mỗi mục, tạo start/end và timeStr
+function parseEvent(item) {
+  const dayMatch = item['Đề mục'].match(/Ngày\s*(\d+)/);
+  const dayOffset = dayMatch ? parseInt(dayMatch[1], 10) - 1 : 0;
+  const date = new Date(baseDate);
+  date.setDate(baseDate.getDate() + dayOffset);
+
+  let start = new Date(date), end = new Date(date);
+  const t = item['Thời gian'];
+  let timeStr;
+  if (t && /\d/.test(t)) {
+    const parts = t.split(/[-–]/).map(s => s.trim());
+    const toDateTime = s => {
+      const [h, m] = s.split(':');
+      const d = new Date(date);
+      d.setHours(+h, +m, 0);
+      return d;
+    };
+    start = toDateTime(parts[0]);
+    end   = parts[1] ? toDateTime(parts[1]) : new Date(start.getTime() + 3600000);
+    timeStr = parts[1]
+      ? `${formatTime(start)} - ${formatTime(end)}`
+      : formatTime(start);
+  } else {
+    timeStr = 'Chưa rõ';
+    start.setHours(0,0,0);
+    end.setHours(23,59,59);
+  }
+
+  return { ...item, date, start, end, timeStr };
+}
+
+// Gom nhóm theo ngày giữ thứ tự
+const eventsByDate = {};
+const dayOrder = [];  // lưu thứ tự ngày xuất hiện
+data.forEach(item => {
+  const evt = parseEvent(item);
+  const dayKey = evt.date.toLocaleDateString('vi-VN', {
+    weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric'
+  });
+  if (!eventsByDate[dayKey]) {
+    eventsByDate[dayKey] = [];
+    dayOrder.push(dayKey);
+  }
+  eventsByDate[dayKey].push(evt);
+});
+
+// Hiển thị theo thứ tự mảng JSON
+const container = document.getElementById('schedule');
+dayOrder.forEach(dayKey => {
+  const section = document.createElement('div');
+  section.className = 'day-section';
+  const title = document.createElement('div');
+  title.className = 'day-title';
+  title.textContent = dayKey;
+  section.appendChild(title);
+
+  // Không sort, giữ nguyên thứ tự eventsByDate[dayKey]
+  eventsByDate[dayKey].forEach(evt => {
+    const div = document.createElement('div');
+    div.className = 'event ' + (
+      now > evt.end    ? 'past' :
+      now >= evt.start ? 'current' : 'upcoming'
+    );
+
+    const timeSpan = document.createElement('div');
+    timeSpan.className = 'time';
+    timeSpan.textContent = evt.timeStr;
+    div.appendChild(timeSpan);
+
+    const content = document.createElement('div');
+    content.className = 'content';
+    content.textContent = evt['Nội dung'] || '';
+    div.appendChild(content);
+
+    section.appendChild(div);
+  });
+
+  container.appendChild(section);
+});
+</script>
+
 </body>
-</html> 
+</html>
