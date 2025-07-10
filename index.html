@@ -34,12 +34,12 @@
             border-radius: 8px;
             margin: 12px 0;
             background: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
 
         .event:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
             transform: translateY(-1px);
         }
 
@@ -71,7 +71,7 @@
             font-weight: 600;
             font-size: 14px;
             color: #495057;
-            background: rgba(0,0,0,0.05);
+            background: rgba(0, 0, 0, 0.05);
             padding: 4px 8px;
             border-radius: 4px;
             min-width: 120px;
@@ -88,23 +88,23 @@
             font-size: 12px;
             font-weight: 500;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
         }
 
         .copy-btn:hover {
             background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,123,255,0.4);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
         }
 
         .copy-btn:active {
             transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
         }
 
         .copy-btn.copied {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            box-shadow: 0 2px 4px rgba(40,167,69,0.3);
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
         }
 
         .content {
@@ -376,13 +376,184 @@
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'copy-btn';
                 copyBtn.textContent = 'Copy';
-                copyBtn.onclick = () => {
-                    let copyText = `${evt.timeStr} - ${evt['Nội dung']}`;
+                                copyBtn.onclick = () => {
+                    let copyText = `📅 ${evt.timeStr} - ${evt['Nội dung']}`;
                     if (evt.note) {
-                        copyText += `\nGhi chú: ${evt.note}`;
+                        copyText += `\n📝 Ghi chú: ${evt.note}`;
                     }
+                    
+                    // Tạo thông báo linh hoạt theo loại sự kiện
+                    const dayInfo = evt.date.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' });
+                    
+                    // Phân loại sự kiện
+                    const content = evt['Nội dung'].toLowerCase();
+                    let notificationType = 'general';
+                    
+                    if (content.includes('tập trung') || content.includes('đón')) {
+                        notificationType = 'meeting';
+                    } else if (content.includes('ăn') || content.includes('bữa')) {
+                        notificationType = 'meal';
+                    } else if (content.includes('check') || content.includes('nhận phòng')) {
+                        notificationType = 'checkin';
+                    } else if (content.includes('khởi hành') || content.includes('di chuyển')) {
+                        notificationType = 'travel';
+                    } else if (content.includes('tham quan') || content.includes('du thuyền') || content.includes('kayak')) {
+                        notificationType = 'activity';
+                    } else if (content.includes('gala') || content.includes('dinner')) {
+                        notificationType = 'special';
+                    } else if (content.includes('checkout') || content.includes('về')) {
+                        notificationType = 'departure';
+                    }
+                    
+                    // Tạo thông báo theo loại
+                    let fullNotification = '';
+                    
+                    switch(notificationType) {
+                        case 'meeting':
+                            fullNotification = `🚌 THÔNG BÁO TẬP TRUNG ĐOÀN
 
-                    navigator.clipboard.writeText(copyText).then(() => {
+📋 ${dayInfo}
+⏰ ${evt.timeStr}
+📍 ${evt['Nội dung']}${evt.note ? `\n📝 Lưu ý: ${evt.note}` : ''}
+
+💡 Anh chị em vui lòng:
+• Có mặt đúng giờ tại điểm hẹn
+• Mang theo giấy tờ tùy thân
+• Chuẩn bị hành lý gọn gàng
+• Đeo thẻ đoàn để dễ nhận biết
+
+🎯 Đảm bảo đoàn 20 người khởi hành đúng lịch trình!
+
+📞 Liên hệ HDV nếu có vấn đề gì nhé!`;
+                            break;
+                            
+                        case 'meal':
+                            fullNotification = `🍽️ THÔNG BÁO BỮA ĂN
+
+📋 ${dayInfo}
+⏰ ${evt.timeStr}
+📍 ${evt['Nội dung']}${evt.note ? `\n📝 Lưu ý: ${evt.note}` : ''}
+
+💡 Anh chị em lưu ý:
+• Tập trung tại nhà hàng đúng giờ
+• Thông báo nếu có dị ứng thực phẩm
+• Ăn uống vừa phải để không mệt
+• Chụp ảnh lưu niệm bữa ăn
+
+🎯 Thưởng thức ẩm thực địa phương cùng đoàn!
+
+📞 Báo HDV nếu cần hỗ trợ gì thêm!`;
+                            break;
+                            
+                        case 'checkin':
+                            fullNotification = `🏨 THÔNG BÁO CHECK-IN
+
+📋 ${dayInfo}
+⏰ ${evt.timeStr}
+📍 ${evt['Nội dung']}${evt.note ? `\n📝 Lưu ý: ${evt.note}` : ''}
+
+💡 Anh chị em chuẩn bị:
+• Giấy tờ tùy thân để check-in
+• Thông tin cá nhân chính xác
+• Nhận phòng theo danh sách
+• Kiểm tra đồ đạc trong phòng
+
+🎯 Nghỉ ngơi thoải mái sau hành trình!
+
+📞 HDV sẽ hỗ trợ nếu có vấn đề gì!`;
+                            break;
+                            
+                        case 'travel':
+                            fullNotification = `🚗 THÔNG BÁO DI CHUYỂN
+
+📋 ${dayInfo}
+⏰ ${evt.timeStr}
+📍 ${evt['Nội dung']}${evt.note ? `\n📝 Lưu ý: ${evt.note}` : ''}
+
+💡 Anh chị em cần:
+• Tập trung đúng giờ tại điểm hẹn
+• Mang theo đồ dùng cá nhân
+• Ngồi đúng vị trí được phân công
+• Tuân thủ quy định an toàn
+
+🎯 Đảm bảo hành trình thuận lợi!
+
+📞 HDV luôn sẵn sàng hỗ trợ!`;
+                            break;
+                            
+                        case 'activity':
+                            fullNotification = `🎯 THÔNG BÁO HOẠT ĐỘNG
+
+📋 ${dayInfo}
+⏰ ${evt.timeStr}
+📍 ${evt['Nội dung']}${evt.note ? `\n📝 Lưu ý: ${evt.note}` : ''}
+
+💡 Anh chị em chuẩn bị:
+• Trang phục phù hợp với hoạt động
+• Giày dép thoải mái, an toàn
+• Nước uống và đồ dùng cá nhân
+• Camera để lưu lại khoảnh khắc đẹp
+
+🎯 Tạo kỷ niệm đáng nhớ cùng đoàn!
+
+📞 HDV sẽ hướng dẫn chi tiết!`;
+                            break;
+                            
+                        case 'special':
+                            fullNotification = `🎉 THÔNG BÁO SỰ KIỆN ĐẶC BIỆT
+
+📋 ${dayInfo}
+⏰ ${evt.timeStr}
+📍 ${evt['Nội dung']}${evt.note ? `\n📝 Lưu ý: ${evt.note}` : ''}
+
+💡 Anh chị em chuẩn bị:
+• Trang phục lịch sự, đẹp mắt
+• Tinh thần vui vẻ, sẵn sàng giao lưu
+• Camera để lưu lại khoảnh khắc
+• Chuẩn bị tâm trạng thật tốt
+
+🎯 Đây sẽ là đêm đáng nhớ nhất chuyến đi!
+
+📞 HDV sẽ tạo không khí thật vui!`;
+                            break;
+                            
+                        case 'departure':
+                            fullNotification = `👋 THÔNG BÁO KẾT THÚC CHUYẾN ĐI
+
+📋 ${dayInfo}
+⏰ ${evt.timeStr}
+📍 ${evt['Nội dung']}${evt.note ? `\n📝 Lưu ý: ${evt.note}` : ''}
+
+💡 Anh chị em cần:
+• Kiểm tra lại đồ đạc cá nhân
+• Thanh toán các chi phí phát sinh
+• Mua sắm quà lưu niệm nếu muốn
+• Chụp ảnh lưu niệm cuối cùng
+
+🎯 Cảm ơn đoàn đã đồng hành cùng chuyến đi!
+
+📞 HDV luôn sẵn sàng hỗ trợ đến phút cuối!`;
+                            break;
+                            
+                        default:
+                            fullNotification = `🔔 THÔNG BÁO LỊCH TRÌNH
+
+📋 ${dayInfo}
+⏰ ${evt.timeStr}
+📍 ${evt['Nội dung']}${evt.note ? `\n📝 Lưu ý: ${evt.note}` : ''}
+
+💡 Anh chị em vui lòng:
+• Chuẩn bị đúng giờ
+• Tuân thủ hướng dẫn HDV
+• Hỗ trợ lẫn nhau trong đoàn
+• Tạo kỷ niệm đẹp cùng nhau
+
+🎯 Đảm bảo chuyến đi vui vẻ cho tất cả 20 thành viên!
+
+📞 Liên hệ HDV nếu có thắc mắc!`;
+                    }
+                    
+                    navigator.clipboard.writeText(fullNotification).then(() => {
                         copyBtn.textContent = 'Đã copy!';
                         copyBtn.classList.add('copied');
                         setTimeout(() => {
@@ -393,7 +564,7 @@
                         console.error('Không thể copy: ', err);
                         // Fallback cho trình duyệt cũ
                         const textArea = document.createElement('textarea');
-                        textArea.value = copyText;
+                        textArea.value = fullNotification;
                         document.body.appendChild(textArea);
                         textArea.select();
                         document.execCommand('copy');
@@ -409,12 +580,12 @@
                 };
                 header.appendChild(copyBtn);
 
-                                div.appendChild(header);
+                div.appendChild(header);
 
                 // nội dung
-                const content = document.createElement('div'); 
+                const content = document.createElement('div');
                 content.className = 'content';
-                content.textContent = evt['Nội dung'] || ''; 
+                content.textContent = evt['Nội dung'] || '';
                 div.appendChild(content);
 
                 // note nếu có
