@@ -28,46 +28,102 @@
         }
 
         .event {
-            display: flex;
-            align-items: flex-start;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-left-width: 5px;
-            border-radius: 4px;
-            margin: 8px 0;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-left-width: 4px;
+            border-radius: 8px;
+            margin: 12px 0;
             background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .event:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
         }
 
         .event.past {
-            border-left-color: #999;
-            color: #777;
+            border-left-color: #6c757d;
+            background: #f8f9fa;
+            opacity: 0.7;
         }
 
         .event.current {
             border-left-color: #28a745;
-            background: #e9f7ef;
+            background: linear-gradient(135deg, #e9f7ef 0%, #d4edda 100%);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
         }
 
         .event.upcoming {
             border-left-color: #007bff;
-            background: #e7f1ff;
+            background: linear-gradient(135deg, #e7f1ff 0%, #d1ecf1 100%);
+        }
+
+        .event-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
         }
 
         .time {
-            width: 140px;
-            font-weight: bold;
-            flex-shrink: 0;
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+            background: rgba(0,0,0,0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+        }
+
+        .copy-btn:hover {
+            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,123,255,0.4);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,123,255,0.3);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            box-shadow: 0 2px 4px rgba(40,167,69,0.3);
         }
 
         .content {
-            flex: 1;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #212529;
             white-space: pre-wrap;
+            margin-bottom: 8px;
         }
 
         .note {
-            margin-left: 140px;
             font-style: italic;
-            color: #555;
+            color: #6c757d;
+            font-size: 13px;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #17a2b8;
+            margin-top: 8px;
         }
     </style>
 </head>
@@ -306,13 +362,60 @@
                 const div = document.createElement('div');
                 div.className = `event ${state}`;
 
+                // Tạo header chứa thời gian và nút copy
+                const header = document.createElement('div');
+                header.className = 'event-header';
+
                 // time
-                const timeSpan = document.createElement('div'); timeSpan.className = 'time';
-                timeSpan.textContent = evt.timeStr; div.appendChild(timeSpan);
+                const timeSpan = document.createElement('div');
+                timeSpan.className = 'time';
+                timeSpan.textContent = evt.timeStr;
+                header.appendChild(timeSpan);
+
+                // nút copy
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn';
+                copyBtn.textContent = 'Copy';
+                copyBtn.onclick = () => {
+                    let copyText = `${evt.timeStr} - ${evt['Nội dung']}`;
+                    if (evt.note) {
+                        copyText += `\nGhi chú: ${evt.note}`;
+                    }
+
+                    navigator.clipboard.writeText(copyText).then(() => {
+                        copyBtn.textContent = 'Đã copy!';
+                        copyBtn.classList.add('copied');
+                        setTimeout(() => {
+                            copyBtn.textContent = 'Copy';
+                            copyBtn.classList.remove('copied');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Không thể copy: ', err);
+                        // Fallback cho trình duyệt cũ
+                        const textArea = document.createElement('textarea');
+                        textArea.value = copyText;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+
+                        copyBtn.textContent = 'Đã copy!';
+                        copyBtn.classList.add('copied');
+                        setTimeout(() => {
+                            copyBtn.textContent = 'Copy';
+                            copyBtn.classList.remove('copied');
+                        }, 2000);
+                    });
+                };
+                header.appendChild(copyBtn);
+
+                                div.appendChild(header);
 
                 // nội dung
-                const content = document.createElement('div'); content.className = 'content';
-                content.textContent = evt['Nội dung'] || ''; div.appendChild(content);
+                const content = document.createElement('div'); 
+                content.className = 'content';
+                content.textContent = evt['Nội dung'] || ''; 
+                div.appendChild(content);
 
                 // note nếu có
                 if (evt.note) {
